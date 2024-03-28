@@ -2,6 +2,7 @@ package com.dxc.library.webflux.controller;
 
 import com.dxc.library.webflux.dto.BookDto;
 import com.dxc.library.webflux.service.BookService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class BookController {
 
     @PostMapping("/book")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public Mono<BookDto> saveBook(@RequestBody final BookDto bookDto) {
+    public Mono<BookDto> saveBook(@RequestBody @Valid final BookDto bookDto) {
         return bookService.saveBook(bookDto);
     }
 
