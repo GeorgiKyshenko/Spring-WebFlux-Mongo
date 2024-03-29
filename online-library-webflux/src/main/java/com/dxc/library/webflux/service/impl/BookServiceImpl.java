@@ -56,4 +56,9 @@ public class BookServiceImpl implements BookService {
 
         return updatedBook.map(BookMapper::mapToBookDto);
     }
+
+    @Override
+    public Mono<Void> deleteBookById(String isbn) {
+        return bookRepository.deleteById(isbn);
+    }
 }

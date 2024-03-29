@@ -37,4 +37,9 @@ public class BookController {
     public Mono<BookDto> updateBookById(@RequestBody @Valid final BookDto bookDto) {
         return bookService.updateBookById(bookDto);
     }
+
+    @DeleteMapping("/{isbn}")
+    public Mono<Void> deleteBookById(@PathVariable final String isbn) {
+        return bookService.deleteBookById(isbn);
+    }
 }
