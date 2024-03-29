@@ -7,7 +7,10 @@ import com.dxc.library.webflux.repository.BookRepository;
 import com.dxc.library.webflux.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +31,12 @@ public class BookServiceImpl implements BookService {
 
         final Mono<Book> book = bookRepository.findById(isbn);
         return book.map(BookMapper::mapToBookDto);
+    }
+
+    @Override
+    public Flux<BookDto> findAllBooks() {
+
+        final Flux<Book> books = bookRepository.findAll();
+        return books.map(BookMapper::mapToBookDto);
     }
 }

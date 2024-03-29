@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -25,6 +26,11 @@ public class BookController {
     @ResponseStatus(value = HttpStatus.OK)
     public Mono<BookDto> findBookById(@PathVariable final String isbn) {
         return bookService.findBookById(isbn);
+    }
+
+    @GetMapping("/books")
+    public Flux<BookDto> getAllBooks() {
+        return bookService.findAllBooks();
     }
 
 }
