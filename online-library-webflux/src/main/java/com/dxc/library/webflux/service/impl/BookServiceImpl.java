@@ -20,23 +20,40 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Mono<BookDto> saveBook(BookDto bookDto) {
-
         final Book book = BookMapper.mapToBook(bookDto);
         final Mono<Book> savedBook = bookRepository.save(book);
+
         return savedBook.map(BookMapper::mapToBookDto);
     }
 
     @Override
     public Mono<BookDto> findBookById(final String isbn) {
-
         final Mono<Book> book = bookRepository.findById(isbn);
+
         return book.map(BookMapper::mapToBookDto);
     }
 
     @Override
     public Flux<BookDto> findAllBooks() {
-
         final Flux<Book> books = bookRepository.findAll();
-        return books.map(BookMapper::mapToBookDto);
+
+        return books
+                .map(BookMapper::mapToBookDto)
+                .switchIfEmpty(Flux.empty());
+    }
+
+    @Override
+    public Mono<BookDto> updateBookById(BookDto bookDto) {
+        final Mono<Book> foundBook = bookRepository.findById(bookDto.getIsbn());
+
+        Mono<Book> updatedBook = foundBook.flatMap(book -> {
+            book.setName(bookDto.getName());
+            book.setAuthorName(bookDto.getAuthorName());
+            book.setPages(bookDto.getPages());
+
+            return bookRepository.save(book);
+        });
+
+        return updatedBook.map(BookMapper::mapToBookDto);
     }
 }

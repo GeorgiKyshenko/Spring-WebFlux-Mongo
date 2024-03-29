@@ -11,4 +11,6 @@ public interface BookService {
     Mono<BookDto> findBookById(String isbn);
 
     Flux<BookDto> findAllBooks();
+
+    Mono<BookDto> updateBookById(BookDto bookDto);
 }
