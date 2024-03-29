@@ -14,11 +14,19 @@ import reactor.core.publisher.Mono;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+
     @Override
     public Mono<BookDto> saveBook(BookDto bookDto) {
 
         final Book book = BookMapper.mapToBook(bookDto);
         final Mono<Book> savedBook = bookRepository.save(book);
         return savedBook.map(BookMapper::mapToBookDto);
+    }
+
+    @Override
+    public Mono<BookDto> findBookById(final String isbn) {
+
+        final Mono<Book> book = bookRepository.findById(isbn);
+        return book.map(BookMapper::mapToBookDto);
     }
 }

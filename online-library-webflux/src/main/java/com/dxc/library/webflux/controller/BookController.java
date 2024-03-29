@@ -21,4 +21,10 @@ public class BookController {
         return bookService.saveBook(bookDto);
     }
 
+    @GetMapping("/find/book/{isbn}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public Mono<BookDto> findBookById(@PathVariable final String isbn) {
+        return bookService.findBookById(isbn);
+    }
+
 }
