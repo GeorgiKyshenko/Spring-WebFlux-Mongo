@@ -11,7 +11,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -31,11 +30,15 @@ public class BookControllerIT {
     @BeforeEach
     void setUp() {
         bookDto = BookDto.builder().isbn("1").name("Test Book").authorName("Test AuthorName").pages(200).build();
+    }
 
+    @AfterEach
+    void tearDown() {
+        /*With @BeforeEach the last method which have saveBook inside leave the record in the DB to prevent that, maybe we need
+         * to use @AfterEach and call bookRepository.deleteALl().subscribe() and remove the @Order annotation functionality*/
         System.out.println("===> Start: Deleting records before each");
         bookRepository.deleteAll().subscribe();
         System.out.println("===> End: Deleting complete");
-
     }
 
     @Test
@@ -59,11 +62,7 @@ public class BookControllerIT {
     @Test
     @Order(3)
     void testGetSingleBook() {
-
-        /* For this case I decided to use already existing book to the DB instead of creating a new book here and save it,
-         * but it`s better to do it here */
-
-        //For example:
+        
         final BookDto bookToSave = BookDto.builder()
                 .isbn("100")
                 .name("Get Book")
@@ -133,5 +132,17 @@ public class BookControllerIT {
                 .jsonPath("$.name").isEqualTo(updatedBookResponse.getName())
                 .jsonPath("$.authorName").isEqualTo(updatedBookResponse.getAuthorName())
                 .jsonPath("$.pages").isEqualTo(updatedBookResponse.getPages());
+    }
+
+    @Test
+    void testDeleteBookById() {
+
+        final BookDto savedBook = bookService.saveBook(bookDto).block();
+
+        webTestClient.delete().uri("/api/v1/{isbn}", savedBook.getIsbn())
+                .exchange()
+                .expectStatus().isNoContent()
+                .expectBody()
+                .consumeWith(System.out::println);
     }
 }
