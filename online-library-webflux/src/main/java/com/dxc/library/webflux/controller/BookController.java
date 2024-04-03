@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -41,5 +43,17 @@ public class BookController {
     @DeleteMapping("/{isbn}")
     public Mono<Void> deleteBookById(@PathVariable final String isbn) {
         return bookService.deleteBookById(isbn);
+    }
+
+    /**
+     * Short test with @RequestParam using Map
+     * 
+     * @param params Should be Map of String,String because it gives mapping error if String,Integer
+     * @return map of key value pairs
+     */
+    @GetMapping("/test")
+    public Map<String, String> testMethod(@RequestParam Map<String, String> params) {
+        params.forEach((k,v) -> System.out.println("key: " + k + " value: " + v));
+        return params;
     }
 }
