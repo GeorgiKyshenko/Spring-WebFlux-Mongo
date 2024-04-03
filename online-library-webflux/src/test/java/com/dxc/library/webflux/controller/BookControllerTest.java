@@ -143,7 +143,6 @@ public class BookControllerTest {
     }
 
     @Test
-    @DisplayName("")
     void givenBookId_whenDeleteBookById_thenReturnNothing() {
 
         //given
