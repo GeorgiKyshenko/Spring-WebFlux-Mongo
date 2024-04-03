@@ -41,6 +41,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{isbn}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> deleteBookById(@PathVariable final String isbn) {
         return bookService.deleteBookById(isbn);
     }
