@@ -71,7 +71,7 @@ public class BookControllerIT {
                 .build();
 
         //bookService.saveBook(bookToSave) returns Mono so when we call .block() basically it can be transformed to BookDto or whatever the object is!
-        final BookDto savedBookResponse = bookService.saveBook(bookToSave).block();
+        final BookDto savedBookResponse = bookService.saveBook(bookToSave).blockOptional().orElseThrow();
         //the ID of savedBookResponse is passed to the uri as path variable.
 
         webTestClient.get().uri("/api/v1/find/book/{isbn}", Objects.requireNonNull(savedBookResponse.getIsbn()))
@@ -110,7 +110,7 @@ public class BookControllerIT {
     @Test
     void updateBookById() {
 
-        final BookDto savedBook = bookService.saveBook(bookDto).block();
+        final BookDto savedBook = bookService.saveBook(bookDto).blockOptional().orElseThrow();
         final BookDto updatedBookResponse = BookDto.builder()
                 .isbn(savedBook.getIsbn())
                 .name("Update Name")
@@ -137,7 +137,7 @@ public class BookControllerIT {
     @Test
     void testDeleteBookById() {
 
-        final BookDto savedBook = bookService.saveBook(bookDto).block();
+        final BookDto savedBook = bookService.saveBook(bookDto).blockOptional().orElseThrow();
 
         webTestClient.delete().uri("/api/v1/{isbn}", savedBook.getIsbn())
                 .exchange()
