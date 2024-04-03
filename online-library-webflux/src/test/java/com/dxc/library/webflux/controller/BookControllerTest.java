@@ -153,7 +153,7 @@ public class BookControllerTest {
 
         //then
         response.expectStatus()
-                .isOk()
+                .isNoContent()
                 .expectBody()
                 .consumeWith(System.out::println);
 
