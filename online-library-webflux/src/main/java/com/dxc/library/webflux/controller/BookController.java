@@ -35,7 +35,7 @@ public class BookController {
         return bookService.findAllBooks();
     }
 
-    @PutMapping("/update/book/{isbn}")
+    @PutMapping("/update/book")
     public Mono<BookDto> updateBookById(@RequestBody @Valid final BookDto bookDto) {
         return bookService.updateBookById(bookDto);
     }
