@@ -86,6 +86,16 @@ public class BookControllerIT {
 
     @Test
     void testGetAllBooks() {
+        final BookDto bookToSave = BookDto.builder()
+                .isbn("100")
+                .name("Book")
+                .authorName("AuthorName")
+                .pages(200)
+                .build();
+
+        // we need to save some books in order to get a list of books from getAllBooks method, because we delete them in BeforeEach annotated method!
+        bookService.saveBook(bookDto).block();
+        bookService.saveBook(bookToSave).block();
 
         webTestClient.get().uri("/api/v1/books")
                 .accept(MediaType.APPLICATION_JSON)
