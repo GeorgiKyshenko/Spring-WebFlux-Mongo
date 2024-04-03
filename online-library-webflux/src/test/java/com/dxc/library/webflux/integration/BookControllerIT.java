@@ -3,8 +3,7 @@ package com.dxc.library.webflux.integration;
 import com.dxc.library.webflux.dto.BookDto;
 import com.dxc.library.webflux.repository.BookRepository;
 import com.dxc.library.webflux.service.BookService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -15,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BookControllerIT {
 
     @Autowired
@@ -39,6 +39,7 @@ public class BookControllerIT {
     }
 
     @Test
+    @Order(1)
     void testSaveBook() {
 
         webTestClient.post().uri("/api/v1/book")
@@ -56,6 +57,7 @@ public class BookControllerIT {
     }
 
     @Test
+    @Order(3)
     void testGetSingleBook() {
 
         /* For this case I decided to use already existing book to the DB instead of creating a new book here and save it,
@@ -85,6 +87,7 @@ public class BookControllerIT {
     }
 
     @Test
+    @Order(2)
     void testGetAllBooks() {
         final BookDto bookToSave = BookDto.builder()
                 .isbn("100")
@@ -103,5 +106,32 @@ public class BookControllerIT {
                 .expectStatus().isOk()
                 .expectBodyList(BookDto.class)
                 .consumeWith(System.out::println);
+    }
+
+    @Test
+    void updateBookById() {
+
+        final BookDto savedBook = bookService.saveBook(bookDto).block();
+        final BookDto updatedBookResponse = BookDto.builder()
+                .isbn(savedBook.getIsbn())
+                .name("Update Name")
+                .authorName("Update Author")
+                .pages(358)
+                .build();
+
+        System.out.println("===> " + bookRepository.findById(savedBook.getIsbn()).block());
+
+        webTestClient.put().uri("/api/v1/update/book")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(Mono.just(updatedBookResponse), BookDto.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .consumeWith(System.out::println)
+                .jsonPath("$.isbn").isEqualTo(updatedBookResponse.getIsbn())
+                .jsonPath("$.name").isEqualTo(updatedBookResponse.getName())
+                .jsonPath("$.authorName").isEqualTo(updatedBookResponse.getAuthorName())
+                .jsonPath("$.pages").isEqualTo(updatedBookResponse.getPages());
     }
 }
